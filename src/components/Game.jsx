@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { makeCard } from "../utils/Card.js";
+import { makeCard, calculateValue } from "../utils/Card.js";
 import Insurance from "./Insurance.jsx";
 import Split from "./Split.jsx";
 import Dealer from "./Dealer.jsx";
@@ -7,8 +7,6 @@ import Player from "./Player.jsx";
 
 export default function Game() {
   const [hands, setHands] = useState([[]]);
-  const [activeHand, setActiveHand] = useState(0);
-  const [playerHand, setPlayerHand] = useState([]);
   const [dealerHand, setDealerHand] = useState([]);
 
   // insurance
@@ -19,9 +17,9 @@ export default function Game() {
   const [splitOption, setSplitOption] = useState(false);
   const [split, setSplit] = useState(false);
 
-  function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+//   function delay(ms) {
+//     return new Promise((resolve) => setTimeout(resolve, ms));
+//   }
 
   const startGame = () => {
     resetGame();
@@ -29,12 +27,13 @@ export default function Game() {
   };
 
   const resetGame = () => {
-    setPlayerHand([]);
     setDealerHand([]);
     setHands([]);
+    insuranceSetter(false);
+    splitSetter(false);
   };
 
-  const dealCards = async () => {
+  const dealCards = () => {
     let hands = [];
     let dealerHand = [];
     let playerHand = [];
@@ -43,13 +42,11 @@ export default function Game() {
     card.flipped = false;
 
     for (let i = 0; i < 4; i++) {
-      await delay(500);
       if (i === 3) {
         dealerHand = [...dealerHand, card];
         setDealerHand(dealerHand);
       } else if (i % 2 === 0) {
         playerHand = [...playerHand, makeCard(playerHand.length)];
-        setPlayerHand(playerHand);
       } else {
         dealerHand = [...dealerHand, makeCard(dealerHand.length)];
         setDealerHand(dealerHand);
@@ -70,37 +67,28 @@ export default function Game() {
   const runScenario = (hands, dealerHand) => {
     const hand = hands[0];
 
-    if (calculateValue(dealerHand) === 21) {
+    if (dealerHand[0].id === 1) {
       setInsuranceOption(true);
       console.log(dealerHand);
+      if (calculateValue(dealerHand) === 21)
       console.log("dealer bj");
     }
 
     if (calculateValue(hands[0]) === 21) {
       console.log(hands[0]);
       console.log("player bj");
-    } else if (hand[0].value === hand[1].value) {
+    } else if (hand[0].id === hand[1].id) {
       setSplitOption(true);
       console.log(hands[0]);
       console.log("player split potential");
     } else {
-      console.log(hands[0]);
+      console.log(hands);
       console.log("something else");
     }
   };
 
-  // calculate total of given hand
-  function calculateValue(cards) {
-    let total = 0;
-    let aceCount = 0;
-    for (const card of cards) {
-      if (card.flipped) {
-        total += card.value;
-        if (card.value === 1) aceCount++;
-      }
-    }
+  const handlePlayerDone = (results) => {
 
-    return aceCount > 0 && total + 10 <= 21 ? total + 10 : total;
   }
 
   useEffect(() => {
@@ -129,18 +117,7 @@ export default function Game() {
       )}
       {splitOption && <Split active={splitOption} splitSet={splitSetter} />}
       <Dealer cards={dealerHand} />
-      {hands.length > 1 ? (
-        hands.map((hand, index) => (
-          <Player
-            key={index}
-            cards={hand}
-            playerIndex={index}
-            currHand={activeHand}
-          />
-        ))
-      ) : (
-        <Player cards={hands[0]} playerIndex={0} />
-      )}
+      <Player hands={hands} playerDone={handlePlayerDone}/>
     </div>
   );
 }

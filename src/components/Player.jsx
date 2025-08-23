@@ -1,50 +1,35 @@
-import React, { useEffect, useState } from "react";
-import Card from "./Card.jsx";
+import Hand from "./Hand.jsx";
+import React, { useState } from "react";
+export default function Player({hands, playerDone}) {
+    const [results, setResults] = useState({});
 
-export default function Player(props) {
-    const {cards, playerIndex, currHand} = props;
-
-  const [totalValue, setTotalValue] = useState(0);
-
-  useEffect(() => {
-    let total = 0;
-    let aceCount = 0;
-    let aceValue = 0;
-    for (const card of cards) {
-      if (card.flipped === true) {
-        total += card.value;
-        if (card.value === 1) aceCount++;
-
-        if (aceCount > 0) {
-          aceValue = total + 10;
-        }
-      }
+    const handleCompletedHand = (handIndex, result) => {
+        setResults(prev => {
+            const updatedResults = {...prev, [handIndex]: result};
+            if (Objects.keys(updatedResults).length === hands.length) {
+                playerDone(updatedResults);
+            }
+            console.log(updatedResults);
+            return updatedResults;
+        });
     }
-    aceValue < 21 && aceCount > 0
-      ? setTotalValue(total + "," + aceValue)
-      : aceValue === 21
-      ? setTotalValue(21)
-      : setTotalValue(total);
-  }, [cards]);
 
-  return (
-    <div className="player-area">
-      <h2>Player's Hand</h2>
-      <div>Total Value: {totalValue}</div>
+    return(
+        <div>
+            <div className="player-section">
+                <h2>Player's Hand</h2>
 
-      <div className="card-container">
-        {cards.map((card, index) => {
-          return (
-            <Card
-              key={index}
-              id={card.id}
-              text={card.text}
-              value={card.value}
-              flipped={card.flipped}
-            />
-          );
-        })}
-      </div>
-    </div>
-  );
+                {hands.map((hand, index)=> {
+                    return(
+                    <Hand
+                        key={index}
+                        cards={hand}
+                        setComplete={(result) => handleCompletedHand(index, result)}
+                    />);
+                })}
+            </div>
+
+        </div>
+    );
+
 }

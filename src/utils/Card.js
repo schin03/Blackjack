@@ -25,7 +25,8 @@ export function makeCard(position) {
       : num + "♦️";
 
   return {
-    id: position,
+    id: num,
+    pos: position,
     text: str,
     value: val,
     flipped: true,
@@ -33,5 +34,17 @@ export function makeCard(position) {
       this.id = pos;
     }
   };
-  
+}
+
+export function calculateValue(cards) {
+    let total = 0;
+    let aceCount = 0;
+    for (const card of cards) {
+      if (card.flipped) {
+        total += card.value;
+        if (card.value === 1) aceCount++;
+      }
+    }
+
+    return aceCount > 0 && total + 10 <= 21 ? total + 10 : total;
 }
