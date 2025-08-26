@@ -7,16 +7,20 @@ import Player from "./Player.jsx";
 
 export default function Game() {
 
+    // game running
+    const [gameStart, setGameStart] = useState(false);
+    const [currHand, setCurrHand] = useState(0);
+
     // hands
     const [hands, setHands] = useState([[]]);
     const [dealerHand, setDealerHand] = useState([]);
 
     // insurance
-    const [insuranceOption, setInsuranceOption] = useState(false);
+    const [insuranceOption, setInsuranceOption] = useState(false); // pop up option
     const [insurance, setInsurance] = useState(false);
 
     // split
-    const [splitOption, setSplitOption] = useState(false);
+    const [splitOption, setSplitOption] = useState(false); // pop up option
     const [split, setSplit] = useState(false);
 
     //   function delay(ms) {
@@ -55,8 +59,7 @@ export default function Game() {
             }
         }
 
-        // playerHand = [makeCard(0), makeCard(0)];
-        // setPlayerHand(playerHand);
+        playerHand = [makeCard(0), makeCard(0)];
 
         // dealerHand = [makeCard(0), makeCard(9)];
         // setDealerHand(dealerHand);
@@ -114,12 +117,12 @@ export default function Game() {
     return (
         <div>
             <button onClick={startGame}>Start Game</button>
+            <Dealer cards={dealerHand} />
+            <Player hands={hands} playerDone={handlePlayerDone} splitChoice={split}/>
             {insuranceOption && (
                 <Insurance active={insuranceOption} insuranceSet={insuranceSetter} />
             )}
             {splitOption && <Split active={splitOption} splitSet={splitSetter} />}
-            <Dealer cards={dealerHand} />
-            <Player hands={hands} playerDone={handlePlayerDone}/>
         </div>
     );
 }

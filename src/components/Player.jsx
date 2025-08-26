@@ -1,6 +1,6 @@
 import Hand from "./Hand.jsx";
 import React, { useState } from "react";
-export default function Player({hands, playerDone, gameStatus}) {
+export default function Player({ hands, playerDone, splitOption }) {
     const [results, setResults] = useState({});
 
     const handleCompletedHand = (handIndex, result) => {

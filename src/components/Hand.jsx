@@ -8,12 +8,8 @@ export default function Hand({ cards, setComplete }) {
     const [hand, setHand] = useState(cards);
     const [done, setDone] = useState(false);
 
-    useEffect(() => {
-        setHand(cards);
-    }, [cards]);
-
+    // perform hit
     const hit = () => {
-
         const card = makeCard(hand.length);
         const updatedHand = [...hand, card];
         setHand(updatedHand);
@@ -24,10 +20,16 @@ export default function Hand({ cards, setComplete }) {
         }
     }
 
+    // perform stand
     const stand = () => {
         setComplete({ status: "stand", total: calculateValue(hand) });
         setDone(true);
     }
+
+    // update hand display
+    useEffect(() => {
+        setHand(cards);
+    }, [cards]);
 
     // count the total for the hand
     useEffect(() => {
