@@ -1,7 +1,9 @@
 import Hand from "./Hand.jsx";
 import React, { useState } from "react";
-export default function Player({ hands, playerDone, splitOption }) {
+export default function Player({ initialHands, playerDone, splitOption }) {
     const [results, setResults] = useState({});
+    const [currHand, setCurrHand] = useState(0);
+    const [hands, setHands] = useState(initialHands);
 
     const handleCompletedHand = (handIndex, result) => {
         setResults(prev => {
@@ -12,6 +14,13 @@ export default function Player({ hands, playerDone, splitOption }) {
             console.log(updatedResults);
             return updatedResults;
         });
+    }
+
+
+    const finishCurrentHand = () => {
+        if (currHand < hands.length) {
+            setCurrHand(currHand +1);
+        }
     }
 
     return(
@@ -25,6 +34,8 @@ export default function Player({ hands, playerDone, splitOption }) {
                         key={index}
                         cards={hand}
                         setComplete={(result) => handleCompletedHand(index, result)}
+                        active={index === currHand}
+                        onFinish={finsihCurrentHand}
                     />);
                 })}
             </div>

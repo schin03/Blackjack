@@ -9,7 +9,6 @@ export default function Game() {
 
     // game running
     const [gameStart, setGameStart] = useState(false);
-    const [currHand, setCurrHand] = useState(0);
 
     // hands
     const [hands, setHands] = useState([[]]);
@@ -118,7 +117,7 @@ export default function Game() {
         <div>
             <button onClick={startGame}>Start Game</button>
             <Dealer cards={dealerHand} />
-            <Player hands={hands} playerDone={handlePlayerDone} splitChoice={split}/>
+            <Player initialHands={hands} playerDone={handlePlayerDone} splitChoice={split}/>
             {insuranceOption && (
                 <Insurance active={insuranceOption} insuranceSet={insuranceSetter} />
             )}
