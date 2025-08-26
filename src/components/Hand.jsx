@@ -19,19 +19,14 @@ export default function Hand({ cards, setComplete }) {
         setHand(updatedHand);
         console.log(updatedHand);
         if (calculateValue(updatedHand) > 21) {
-            setDone(true);
             setComplete({ status: "bust", total: calculateValue(updatedHand) });
-
+            setDone(true);
         }
     }
 
     const stand = () => {
-        setDone(true);
         setComplete({ status: "stand", total: calculateValue(hand) });
-    }
-
-    const test = () => {
-        console.log(cards);
+        setDone(true);
     }
 
     // count the total for the hand
@@ -59,6 +54,7 @@ export default function Hand({ cards, setComplete }) {
 
     return (
         <div>
+            <div className="card-value">Value: {totalValue}</div>
             <div className="card-container">
                 {hand.map((card, index) => {
                     return (

@@ -29,7 +29,7 @@ export default function Dealer({ cards }) {
     <div className="dealer-area">
       <h2>Dealer's Hand</h2>
       <div>Total Value: {totalValue}</div>
-
+    
       <div className="card-container">
         {cards.map((card, index) => {
           return (

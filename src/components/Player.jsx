@@ -1,12 +1,12 @@
 import Hand from "./Hand.jsx";
 import React, { useState } from "react";
-export default function Player({hands, playerDone}) {
+export default function Player({hands, playerDone, gameStatus}) {
     const [results, setResults] = useState({});
 
     const handleCompletedHand = (handIndex, result) => {
         setResults(prev => {
             const updatedResults = {...prev, [handIndex]: result};
-            if (Objects.keys(updatedResults).length === hands.length) {
+            if (Object.keys(updatedResults).length === hands.length) {
                 playerDone(updatedResults);
             }
             console.log(updatedResults);

@@ -6,118 +6,120 @@ import Dealer from "./Dealer.jsx";
 import Player from "./Player.jsx";
 
 export default function Game() {
-  const [hands, setHands] = useState([[]]);
-  const [dealerHand, setDealerHand] = useState([]);
 
-  // insurance
-  const [insuranceOption, setInsuranceOption] = useState(false);
-  const [insurance, setInsurance] = useState(false);
+    // hands
+    const [hands, setHands] = useState([[]]);
+    const [dealerHand, setDealerHand] = useState([]);
 
-  // split
-  const [splitOption, setSplitOption] = useState(false);
-  const [split, setSplit] = useState(false);
+    // insurance
+    const [insuranceOption, setInsuranceOption] = useState(false);
+    const [insurance, setInsurance] = useState(false);
 
-//   function delay(ms) {
-//     return new Promise((resolve) => setTimeout(resolve, ms));
-//   }
+    // split
+    const [splitOption, setSplitOption] = useState(false);
+    const [split, setSplit] = useState(false);
 
-  const startGame = () => {
-    resetGame();
-    dealCards();
-  };
+    //   function delay(ms) {
+    //     return new Promise((resolve) => setTimeout(resolve, ms));
+    //   }
 
-  const resetGame = () => {
-    setDealerHand([]);
-    setHands([]);
-    insuranceSetter(false);
-    splitSetter(false);
-  };
+    const startGame = () => {
+        resetGame();
+        dealCards();
+    };
 
-  const dealCards = () => {
-    let hands = [];
-    let dealerHand = [];
-    let playerHand = [];
+    const resetGame = () => {   
+        setDealerHand([]);
+        setHands([]);
+        insuranceSetter(false);
+        splitSetter(false);
+    };
 
-    const card = makeCard(1);
-    card.flipped = false;
+    const dealCards = () => {
+        let hands = [];
+        let dealerHand = [];
+        let playerHand = [];
 
-    for (let i = 0; i < 4; i++) {
-      if (i === 3) {
-        dealerHand = [...dealerHand, card];
-        setDealerHand(dealerHand);
-      } else if (i % 2 === 0) {
-        playerHand = [...playerHand, makeCard(playerHand.length)];
-      } else {
-        dealerHand = [...dealerHand, makeCard(dealerHand.length)];
-        setDealerHand(dealerHand);
-      }
+        const card = makeCard(1);
+        card.flipped = false;
+
+        for (let i = 0; i < 4; i++) {
+            if (i === 3) {
+                dealerHand = [...dealerHand, card];
+                setDealerHand(dealerHand);
+            } else if (i % 2 === 0) {
+                playerHand = [...playerHand, makeCard(playerHand.length)];
+            } else {
+                dealerHand = [...dealerHand, makeCard(dealerHand.length)];
+                setDealerHand(dealerHand);
+            }
+        }
+
+        // playerHand = [makeCard(0), makeCard(0)];
+        // setPlayerHand(playerHand);
+
+        // dealerHand = [makeCard(0), makeCard(9)];
+        // setDealerHand(dealerHand);
+
+        hands.push(playerHand);
+        setHands(hands);
+        runScenario(hands, dealerHand);
+    };
+
+    const runScenario = (hands, dealerHand) => {
+        const hand = hands[0];
+
+        if (dealerHand[0].id === 1) {
+            setInsuranceOption(true);
+            console.log(dealerHand);
+            if (calculateValue(dealerHand) === 21)
+                console.log("dealer bj");
+        }
+
+        if (calculateValue(hands[0]) === 21) {
+            console.log(hands[0]);
+            console.log("player bj");
+        } else if (hand[0].id === hand[1].id) {
+            setSplitOption(true);
+            console.log(hands[0]);
+            console.log("player split potential");
+        } else {
+            console.log(hands);
+
+        }
+    };
+
+    const handlePlayerDone = (results) => {
+
     }
 
-    // playerHand = [makeCard(0), makeCard(0)];
-    // setPlayerHand(playerHand);
+    useEffect(() => {
+        console.log(insurance);
+    }, [insurance]);
 
-    // dealerHand = [makeCard(0), makeCard(9)];
-    // setDealerHand(dealerHand);
+    useEffect(() => {
+        console.log(split);
+    }, [split]);
 
-    hands.push(playerHand);
-    setHands(hands);
-    runScenario(hands, dealerHand);
-  };
+    const insuranceSetter = (option) => {
+        setInsurance(option);
+        setInsuranceOption(false);
+    };
 
-  const runScenario = (hands, dealerHand) => {
-    const hand = hands[0];
+    const splitSetter = (option) => {
+        setSplit(option);
+        setSplitOption(false);
+    };
 
-    if (dealerHand[0].id === 1) {
-      setInsuranceOption(true);
-      console.log(dealerHand);
-      if (calculateValue(dealerHand) === 21)
-      console.log("dealer bj");
-    }
-
-    if (calculateValue(hands[0]) === 21) {
-      console.log(hands[0]);
-      console.log("player bj");
-    } else if (hand[0].id === hand[1].id) {
-      setSplitOption(true);
-      console.log(hands[0]);
-      console.log("player split potential");
-    } else {
-      console.log(hands);
-      console.log("something else");
-    }
-  };
-
-  const handlePlayerDone = (results) => {
-
-  }
-
-  useEffect(() => {
-    console.log(insurance);
-  }, [insurance]);
-
-  useEffect(() => {
-    console.log(split);
-  }, [split]);
-
-  const insuranceSetter = (option) => {
-    setInsurance(option);
-    setInsuranceOption(false);
-  };
-
-  const splitSetter = (option) => {
-    setSplit(option);
-    setSplitOption(false);
-  };
-
-  return (
-    <div>
-      <button onClick={startGame}>Start Game</button>
-      {insuranceOption && (
-        <Insurance active={insuranceOption} insuranceSet={insuranceSetter} />
-      )}
-      {splitOption && <Split active={splitOption} splitSet={splitSetter} />}
-      <Dealer cards={dealerHand} />
-      <Player hands={hands} playerDone={handlePlayerDone}/>
-    </div>
-  );
+    return (
+        <div>
+            <button onClick={startGame}>Start Game</button>
+            {insuranceOption && (
+                <Insurance active={insuranceOption} insuranceSet={insuranceSetter} />
+            )}
+            {splitOption && <Split active={splitOption} splitSet={splitSetter} />}
+            <Dealer cards={dealerHand} />
+            <Player hands={hands} playerDone={handlePlayerDone}/>
+        </div>
+    );
 }
