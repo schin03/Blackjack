@@ -91,10 +91,6 @@ export default function Game() {
         }
     };
 
-    const handlePlayerDone = (results) => {
-
-    }
-
     useEffect(() => {
         console.log(insurance);
     }, [insurance]);
@@ -117,7 +113,7 @@ export default function Game() {
         <div>
             <button onClick={startGame}>Start Game</button>
             <Dealer cards={dealerHand} />
-            <Player initialHands={hands} playerDone={handlePlayerDone} splitChoice={split}/>
+            <Player initialHands={hands} splitChoice={split}/>
             {insuranceOption && (
                 <Insurance active={insuranceOption} insuranceSet={insuranceSetter} />
             )}

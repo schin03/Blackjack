@@ -26,7 +26,7 @@ export default function Hand({ cards, setComplete }) {
         setDone(true);
     }
 
-    // update hand display
+    // inital update to display hand
     useEffect(() => {
         setHand(cards);
     }, [cards]);
