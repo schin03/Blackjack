@@ -36,6 +36,7 @@ export default function Game() {
         setHands([]);
         insuranceSetter(false);
         splitSetter(false);
+        setGameStart(false);
     };
 
     const dealCards = () => {
@@ -58,7 +59,7 @@ export default function Game() {
             }
         }
 
-        playerHand = [makeCard(0), makeCard(0)];
+        // playerHand = [makeCard(0), makeCard(0)];
 
         // dealerHand = [makeCard(0), makeCard(9)];
         // setDealerHand(dealerHand);
@@ -70,7 +71,7 @@ export default function Game() {
 
     const runScenario = (hands, dealerHand) => {
         const hand = hands[0];
-
+        setGameStart(true);
         if (dealerHand[0].id === 1) {
             setInsuranceOption(true);
             console.log(dealerHand);
@@ -87,7 +88,7 @@ export default function Game() {
             console.log("player split potential");
         } else {
             console.log(hands);
-
+            
         }
     };
 
@@ -113,7 +114,7 @@ export default function Game() {
         <div>
             <button onClick={startGame}>Start Game</button>
             <Dealer cards={dealerHand} />
-            <Player initialHands={hands} splitChoice={split}/>
+            <Player gameStarted={gameStart} initialHands={hands} splitChoice={split}/>
             {insuranceOption && (
                 <Insurance active={insuranceOption} insuranceSet={insuranceSetter} />
             )}

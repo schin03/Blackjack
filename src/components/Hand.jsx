@@ -3,10 +3,10 @@ import React, { useState, useEffect } from "react";
 import { makeCard, calculateValue } from "../utils/Card.js";
 
 
-export default function Hand({ cards, setComplete }) {
+export default function Hand({ gameStarted, cards, active, onFinish }) {
     const [totalValue, setTotalValue] = useState(0);
     const [hand, setHand] = useState(cards);
-    const [done, setDone] = useState(false);
+    const [play, setPlay] = useState(active);
 
     // perform hit
     const hit = () => {
@@ -15,16 +15,21 @@ export default function Hand({ cards, setComplete }) {
         setHand(updatedHand);
         console.log(updatedHand);
         if (calculateValue(updatedHand) > 21) {
-            setComplete({ status: "bust", total: calculateValue(updatedHand) });
-            setDone(true);
+            setPlay(false);
+            onFinish();
         }
     }
 
     // perform stand
     const stand = () => {
-        setComplete({ status: "stand", total: calculateValue(hand) });
-        setDone(true);
+        setPlay(false);
+        onFinish();
     }
+
+    // inital update to display playable buttons
+    useEffect(()=>{
+        setPlay(active);
+    }, [active]);
 
     // inital update to display hand
     useEffect(() => {
@@ -52,6 +57,11 @@ export default function Hand({ cards, setComplete }) {
                 ? setTotalValue(21)
                 : setTotalValue(total);
         console.log(hand);
+
+        console.log(gameStarted);
+        setPlay(active);
+
+        
     }, [hand]);
 
     return (
@@ -69,7 +79,7 @@ export default function Hand({ cards, setComplete }) {
 
                 })}
             </div>
-            {!done && (
+            {gameStarted && play && (
                 <div className="player-options">
                     <button onClick={hit}>hit</button>
                     <button onClick={stand}>stand</button>

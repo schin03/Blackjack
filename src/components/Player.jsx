@@ -1,7 +1,7 @@
 import Hand from "./Hand.jsx";
 import React, { useState, useEffect } from "react";
 import { makeCard } from "../utils/Card.js";
-export default function Player({ initialHands, splitChoice }) {
+export default function Player({ gameStarted, initialHands, splitChoice }) {
   const [currHand, setCurrHand] = useState(0);
   const [hands, setHands] = useState(initialHands);
 
@@ -22,6 +22,7 @@ export default function Player({ initialHands, splitChoice }) {
       let splitHand = [hand1, hand2];
       setHands(splitHand);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [splitChoice]);
 
   if (splitChoice) {
@@ -32,6 +33,7 @@ export default function Player({ initialHands, splitChoice }) {
           {hands.map((hand, index) => {
             return (
               <Hand
+                gameStarted={gameStarted}
                 key={index}
                 cards={hand}
                 active={index === currHand}
@@ -47,7 +49,12 @@ export default function Player({ initialHands, splitChoice }) {
       <div>
         <div className="player-section">
           <h2>Player's Hand</h2>
-          <Hand cards={hands[0]} active={true} onFinish={finishCurrentHand} />
+          <Hand
+            gameStarted={gameStarted}
+            cards={hands[0]}
+            active={true}
+            onFinish={finishCurrentHand}
+          />
         </div>
       </div>
     );
