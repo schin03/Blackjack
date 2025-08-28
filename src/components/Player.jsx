@@ -1,18 +1,39 @@
 import Hand from "./Hand.jsx";
 import React, { useState, useEffect } from "react";
 import { makeCard } from "../utils/Card.js";
-export default function Player({ gameStarted, initialHands, splitChoice }) {
+export default function Player({
+  gameStarted,
+  initialHands,
+  splitChoice,
+  onFinish,
+}) {
   const [currHand, setCurrHand] = useState(0);
   const [hands, setHands] = useState(initialHands);
+  const [results, setResults] = useState([]);
 
-  const finishCurrentHand = () => {
-    if (currHand < hands.length) {
-      setCurrHand(currHand + 1);
+  const finishCurrentHand = (result) => {
+    let r = results;
+    if (splitChoice) {
+      if (currHand < hands.length) {
+        setResults([result]);
+        setCurrHand(currHand + 1);
+      } else {
+        let r = results;
+        onFinish(r.push(result));
+        setCurrHand(0);
+        setResults([]);
+      }
+    } else {
+      onFinish(r.push(result));
     }
   };
 
   useEffect(() => {
     setHands(initialHands);
+  }, [initialHands]);
+
+  useEffect(() => {
+    setCurrHand(0);
   }, [initialHands]);
 
   useEffect(() => {
