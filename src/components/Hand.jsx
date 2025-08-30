@@ -1,90 +1,91 @@
 import Card from "./Card.jsx";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { makeCard, calculateValue } from "../utils/Card.js";
 
 export default function Hand({ gameStarted, cards, active, onFinish }) {
-  const [totalValue, setTotalValue] = useState(0);
-  const [hand, setHand] = useState(cards);
-  const [play, setPlay] = useState(active);
+    const [totalValue, setTotalValue] = useState(0);
+    const [hand, setHand] = useState(cards);
+    const [play, setPlay] = useState(active);
 
-  // perform hit
-  const hit = () => {
-    const card = makeCard(hand.length);
-    const updatedHand = [...hand, card];
-    setHand(updatedHand);
-  };
+    const finished = useRef(false);
 
-  // perform stand
-  const stand = () => {
-    setPlay(false);
-    onFinish(["stand", hand]);
-  };
+    // perform hit
+    const hit = () => {
+        const card = makeCard(hand.length);
+        const updatedHand = [...hand, card];
+        setHand(updatedHand);
+    };
 
-  // inital update to display playable buttons
-  useEffect(() => {
-    setPlay(active);
-  }, [active]);
-
-  // inital update to display hand
-  useEffect(() => {
-    setHand(cards);
-  }, [cards]);
-
-  useEffect(() => {
-    if (calculateValue(hand) === 21) {
-      if (
-        (hand[0].value === 1 && hand[1].value === 10) ||
-        (hand[1].value === 1 && hand[0].value === 10)
-      ) {
+    // perform stand
+    const stand = () => {
         setPlay(false);
-        onFinish(["bj", hand]);
-      }
-    }
-  }, [hand]);
+        finished.current = true;
+        onFinish(["stand", hand]);
+    };
 
-  // count the total for the hand
-  useEffect(() => {
-    let total = 0;
-    let aceCount = 0;
-    let aceValue = 0;
-    for (const card of hand) {
-      if (card.flipped === true) {
-        total += card.value;
-        if (card.value === 1) aceCount++;
+    // inital update to display hand and content
+    useEffect(() => {
+        setPlay(active);
+        setHands(cards);
+        finished.current = false;
+    }, [active, cards]);
 
-        if (aceCount > 0) {
-          aceValue = total + 10;
+    // detect blackjack
+    useEffect(() => {
+        if (!finished.current && hand.length === 2 && calculateValue(hand) === 21) {
+            if (
+                (hand[0].value === 1 && hand[1].value === 10) ||
+                (hand[1].value === 1 && hand[0].value === 10)
+            ) {
+                setPlay(false);
+                finished.current = true;
+                onFinish(["bj", hand]);
+            }
         }
-      }
-    }
-    aceValue < 21 && aceCount > 0
-      ? setTotalValue(total + "," + aceValue)
-      : aceValue === 21
-      ? setTotalValue(21)
-      : setTotalValue(total);
+    }, [hand, onFinish]);
 
-    if (total > 21 || aceValue > 21) {
-      setPlay(false);
-      onFinish(["bust", hand]);
-    } else {
-      setPlay(active);
-    }
-  }, [hand]);
+    // count the total for the hand
+    useEffect(() => {
+        let total = 0;
+        let aceCount = 0;
+        let aceValue = 0;
+        for (const card of hand) {
+            if (card.flipped === true) {
+                total += card.value;
+                if (card.value === 1) aceCount++;
 
-  return (
-    <div>
-      <div className="card-value">Value: {totalValue}</div>
-      <div className="card-container">
-        {hand.map((card, index) => {
-          return <Card key={index} text={card.text} flipped={card.flipped} />;
-        })}
-      </div>
-      {gameStarted && play && (
-        <div className="player-options">
-          <button onClick={hit}>hit</button>
-          <button onClick={stand}>stand</button>
+                if (aceCount > 0) {
+                    aceValue = total + 10;
+                }
+            }
+        }
+        aceValue < 21 && aceCount > 0
+            ? setTotalValue(total + "," + aceValue)
+            : aceValue === 21
+                ? setTotalValue(21)
+                : setTotalValue(total);
+
+        if (!finished.current && (total > 21 || aceValue > 21)) {
+            setPlay(false);
+            finished.current = true;
+            onFinish(["bust", hand]);
+        }
+    }, [hand, active, onFinish]);
+
+    return (
+        <div>
+            <div className="card-value">Value: {totalValue}</div>
+            <div className="card-container">
+                {hand.map((card, index) => {
+                    return <Card key={index} text={card.text} flipped={card.flipped} />;
+                })}
+            </div>
+            {gameStarted && play && (
+                <div className="player-options">
+                    <button onClick={hit}>hit</button>
+                    <button onClick={stand}>stand</button>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }

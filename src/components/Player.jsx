@@ -1,83 +1,62 @@
 import Hand from "./Hand.jsx";
-import React, { useState, useEffect } from "react";
-import { makeCard } from "../utils/Card.js";
+import React, { useState, useEffect, useRef } from "react";
+import { makeCard, calculateValue } from "../utils/Card.js";
 export default function Player({
-  gameStarted,
-  initialHands,
-  splitChoice,
-  onFinish,
+    gameStarted,
+    initialHands,
+    splitChoice,
+    onFinish,
 }) {
-  const [currHand, setCurrHand] = useState(0);
-  const [hands, setHands] = useState(initialHands);
-  const [results, setResults] = useState([]);
+    const [currHand, setCurrHand] = useState(0);
+    const [hands, setHands] = useState(initialHands);
 
-  const finishCurrentHand = (result) => {
-    let r = results;
-    if (splitChoice) {
-      if (currHand < hands.length) {
-        setResults([result]);
-        setCurrHand(currHand + 1);
-      } else {
-        let r = results;
-        onFinish(r.push(result));
+    const finishedHands = useRef(new Set());
+
+    // Cycles through current hands, passes results after player finishes
+    const finishCurrentHand = (resultArray, index) => {
+        if (finishedHands.current.has(index)) return;
+
+        finishedHands.current.add(index);
+        
+        if (splitChoice && currHand < hands.length-1) {
+            setCurrHand(currHand +1);
+        } else {
+            onFinish(resultArray);
+            setCurrHand(0);
+            finishedHands.current.clear();
+        }
+
+    };
+
+    // Refreshes Player on new hand
+    useEffect(() => {
         setCurrHand(0);
-        setResults([]);
-      }
-    } else {
-      onFinish(r.push(result));
-    }
-  };
+        setHands(initialHands);
+        finishedHands.current.clear();
+    }, [initialHands]);
 
-  useEffect(() => {
-    setHands(initialHands);
-  }, [initialHands]);
+    // Splitting logic
+    useEffect(() => {
+        if (splitChoice && hands.length === 1) {
+            let hand1 = [hands[0][0], makeCard(1)];
+            let hand2 = [hands[0][1], makeCard(1)];
+            setHands([hand1, hand2]);
+        }
+        
+    }, [splitChoice, hands]);
 
-  useEffect(() => {
-    setCurrHand(0);
-  }, [initialHands]);
-
-  useEffect(() => {
-    if (splitChoice && hands.length === 1) {
-      let hand1 = [hands[0][0], makeCard(1)];
-      let hand2 = [hands[0][1], makeCard(1)];
-      let splitHand = [hand1, hand2];
-      setHands(splitHand);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [splitChoice]);
-
-  if (splitChoice) {
-    return (
-      <div>
+    return(
         <div className="player-section">
-          <h2>Splitted</h2>
-          {hands.map((hand, index) => {
-            return (
-              <Hand
-                gameStarted={gameStarted}
-                key={index}
-                cards={hand}
-                active={index === currHand}
-                onFinish={finishCurrentHand}
-              />
-            );
-          })}
+            <h2>{splitChoice ? "Splitted Hands" : "Player's Hand"}</h2>
+            {hands.map((hand, index)=> {
+                <Hand
+                    key={index}
+                    gameStarted={gameStarted}
+                    cards={hand}
+                    active={index===currHand}
+                    onFinish={(resultArray) => {finishedCurrentHand(resultArray, index)}}
+                    />
+            })}
         </div>
-      </div>
     );
-  } else {
-    return (
-      <div>
-        <div className="player-section">
-          <h2>Player's Hand</h2>
-          <Hand
-            gameStarted={gameStarted}
-            cards={hands[0]}
-            active={true}
-            onFinish={finishCurrentHand}
-          />
-        </div>
-      </div>
-    );
-  }
 }

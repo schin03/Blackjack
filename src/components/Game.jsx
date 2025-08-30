@@ -36,6 +36,7 @@ export default function Game() {
     insuranceSetter(false);
     splitSetter(false);
     setGameStart(false);
+    setBlackJack(false);
   };
 
   const dealCards = () => {
@@ -80,11 +81,11 @@ export default function Game() {
     if (hand[0].id === hand[1].id) {
       setSplitOption(true);
     }
+
   };
 
   const finishGame = (results) => {
     let dHand = runDealer();
-    console.log(dHand);
     console.log(results);
   };
 
