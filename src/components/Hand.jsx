@@ -8,6 +8,7 @@ export default function Hand({ gameStarted, cards, active, onFinish }) {
     const [play, setPlay] = useState(active);
 
     const finished = useRef(false);
+    
 
     // perform hit
     const hit = () => {
@@ -23,29 +24,50 @@ export default function Hand({ gameStarted, cards, active, onFinish }) {
         onFinish(["stand", hand]);
     };
 
+    const bust = () => {
+        setPlay(false);
+        finished.current = true;
+        onFinish(["bust", hand]);
+    }
+
     // inital update to display hand and content
     useEffect(() => {
-        setPlay(active);
-        setHands(cards);
-        finished.current = false;
-    }, [active, cards]);
 
-    // detect blackjack
-    useEffect(() => {
-        if (!finished.current && hand.length === 2 && calculateValue(hand) === 21) {
+        let currHand = cards;
+
+        // detect initial bj
+        if (!finished.current && currHand.length === 2 && calculateValue(currHand) === 21) {
             if (
-                (hand[0].value === 1 && hand[1].value === 10) ||
-                (hand[1].value === 1 && hand[0].value === 10)
+                (currHand[0].value === 1 && currHand[1].value === 10) ||
+                (currHand[1].value === 1 && currHand[0].value === 10)
             ) {
                 setPlay(false);
                 finished.current = true;
-                onFinish(["bj", hand]);
+                setHand(currHand);
+                setTotalValue(21);
+                onFinish(["bj", currHand]);
             }
+        } else {
+            // rerender updated hand
+            setPlay(active);
+            setHand(cards);
+            finished.current = false;
         }
-    }, [hand, onFinish]);
+    }, [active, cards]);
+
+
+    // detect bust
+    useEffect(() => {
+        if (totalValue > 21) {
+            bust();
+        }
+    }, [totalValue]);
+
 
     // count the total for the hand
     useEffect(() => {
+        if (finished.current) return;
+
         let total = 0;
         let aceCount = 0;
         let aceValue = 0;
@@ -65,12 +87,7 @@ export default function Hand({ gameStarted, cards, active, onFinish }) {
                 ? setTotalValue(21)
                 : setTotalValue(total);
 
-        if (!finished.current && (total > 21 || aceValue > 21)) {
-            setPlay(false);
-            finished.current = true;
-            onFinish(["bust", hand]);
-        }
-    }, [hand, active, onFinish]);
+    }, [hand, onFinish, cards]);
 
     return (
         <div>
