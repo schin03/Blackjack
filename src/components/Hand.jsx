@@ -8,7 +8,7 @@ export default function Hand({ gameStarted, cards, active, onFinish }) {
     const [play, setPlay] = useState(active);
 
     const finished = useRef(false);
-    
+
 
     // perform hit
     const hit = () => {
@@ -37,16 +37,13 @@ export default function Hand({ gameStarted, cards, active, onFinish }) {
 
         // detect initial bj
         if (!finished.current && currHand.length === 2 && calculateValue(currHand) === 21) {
-            if (
-                (currHand[0].value === 1 && currHand[1].value === 10) ||
-                (currHand[1].value === 1 && currHand[0].value === 10)
-            ) {
-                setPlay(false);
-                finished.current = true;
-                setHand(currHand);
-                setTotalValue(21);
-                onFinish(["bj", currHand]);
-            }
+
+            setPlay(false);
+            finished.current = true;
+            setHand(currHand);
+            setTotalValue(21);
+            onFinish(["bj", currHand]);
+
         } else {
             // rerender updated hand
             setPlay(active);

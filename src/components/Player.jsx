@@ -26,7 +26,7 @@ export default function Player({
                 onFinish(splitResults.current);
             }
         } else {
-            onFinish(resultArray);
+            onFinish([resultArray]);
         }
 
     };

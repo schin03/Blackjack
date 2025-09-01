@@ -5,6 +5,7 @@ import Split from "./Split.jsx";
 import Dealer from "./Dealer.jsx";
 import Player from "./Player.jsx";
 
+
 export default function Game() {
     // game running
     const [gameStart, setGameStart] = useState(false);
@@ -21,6 +22,10 @@ export default function Game() {
     const [splitOption, setSplitOption] = useState(false); // pop up option
     const [split, setSplit] = useState(false);
 
+    // game results
+    const [showResults, setShowResults] = useState(false);
+    const [resultText, setResultText] = useState("");
+
     //   function delay(ms) {
     //     return new Promise((resolve) => setTimeout(resolve, ms));
     //   }
@@ -36,7 +41,8 @@ export default function Game() {
         insuranceSetter(false);
         splitSetter(false);
         setGameStart(false);
-
+        setShowResults(false);
+        setResultText("");
     };
 
     const dealCards = () => {
@@ -86,7 +92,13 @@ export default function Game() {
 
     const finishGame = (results) => {
         let dHand = runDealer();
-        console.log(results);
+        let currText = determineWin(results[0], dHand);
+        if (split) {    
+            const text = determineWin(results[1], dHand);
+            currText += " | " + text;
+        } 
+        setResultText(currText);
+        setShowResults(true);
     };
 
     const runDealer = () => {
@@ -102,6 +114,27 @@ export default function Game() {
         return dHand;
     };
 
+    const determineWin = (playerResult, dealerResult) => {
+        let text;
+        const playerNum = calculateValue(playerResult[1]);
+        const dealerNum = calculateValue(dealerResult);
+        if (playerResult[0] === "bj") {
+            text = "Player BlackJack";
+        } else if (playerResult[0] === "bust") {
+            text = "Player Bust";
+        } else if (dealerNum > 21) {
+            text = "Dealer Bust";
+        } else if (playerNum === dealerNum) {
+            text = "Dealer Push";
+        } else if (playerNum > dealerNum) {
+            text = "Player Win";
+        } else {
+            text = "Dealer Win";
+        }
+
+        return text;
+    }
+
     const insuranceSetter = (option) => {
         setInsurance(option);
         setInsuranceOption(false);
@@ -112,15 +145,12 @@ export default function Game() {
         setSplitOption(false);
     };
 
-    useEffect(() => { }, [insurance]);
-
-    useEffect(() => { }, [split]);
+    useEffect(() => { }, [insurance, split]);
 
     return (
         <div>
             <button onClick={startGame}>Start Game</button>
             <Dealer cards={dealerHand} />
-            {/* check split option later */}
             <Player
                 gameStarted={gameStart}
                 initialHands={hands}
@@ -131,6 +161,7 @@ export default function Game() {
                 <Insurance active={insuranceOption} insuranceSet={insuranceSetter} />
             )}
             {splitOption && <Split active={splitOption} splitSet={splitSetter} />}
+            {showResults && <h2>{resultText}</h2>}
         </div>
     );
 }
