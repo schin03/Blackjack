@@ -1,12 +1,19 @@
-# React + Vite
+# Blackjack
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This application utilizes React.js, focusing on a full-stack style application. 
 
-Currently, two official plugins are available:
+Play a simple version of Blackjack by hitting, standing, or doubling against the dealer!
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## How to run
 
-## Expanding the ESLint configuration
+You do require Node.js on your device, which can be downloaded through [here](https://nodejs.org/en/download/).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+After in the terminal run,
+
+- install npm 
+
+- npm run dev
+
+In cases which your device does not allow scripts to run, paste the following text to enable them for the duration of use.
+
+*Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process*
