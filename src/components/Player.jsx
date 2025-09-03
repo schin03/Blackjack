@@ -6,6 +6,7 @@ export default function Player({
     initialHands,
     splitChoice,
     onFinish,
+    playable
 }) {
     const [currHand, setCurrHand] = useState(0);
     const [hands, setHands] = useState(initialHands);
@@ -58,16 +59,20 @@ export default function Player({
 
     return (
         <div className="player-section">
-            <h2>{splitChoice ? "Splitted" : "Player's Hand"}</h2>
+            <h3>Player's Hand</h3>
             {hands.map((hand, index) => {
+                const handClass = hands.length === 2 ? `hand hand-${index}` : "hand hand-single";
                 return (
-                    <Hand
-                        gameStarted={gameStarted}
-                        key={index}
-                        cards={hand}
-                        active={index === currHand}
-                        onFinish={(resultArray) => { finishCurrentHand(resultArray, index) }}
-                    />
+                    <div className={handClass} key={index}>
+                        <Hand
+                            gameStarted={gameStarted}
+                            key={index}
+                            cards={hand}
+                            active={index === currHand && playable}
+                            onFinish={(resultArray) => { finishCurrentHand(resultArray, index) }}
+                        />
+                    </div>
+
                 );
             })}
         </div>

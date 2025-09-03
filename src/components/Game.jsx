@@ -13,6 +13,7 @@ export default function Game() {
     // hands
     const [hands, setHands] = useState([[]]);
     const [dealerHand, setDealerHand] = useState([]);
+    const [playable, setPlayable] = useState(false);
 
     // insurance
     const [insuranceOption, setInsuranceOption] = useState(false); // pop up option
@@ -43,6 +44,7 @@ export default function Game() {
         setGameStart(false);
         setShowResults(false);
         setResultText("");
+        setPlayable(false);
     };
 
     const dealCards = () => {
@@ -84,28 +86,46 @@ export default function Game() {
             if (calculateValue(dealerHand) === 21) console.log("dealer bj");
         }
 
-        if (hand[0].id === hand[1].id) {
+        if (hand[0].id === hand[1].id && hand[0].value < 10) {
             setSplitOption(true);
+        } else {
+            setPlayable(true);
         }
 
     };
 
     const finishGame = (results) => {
-        let dHand = runDealer();
-        let currText = determineWin(results[0], dHand);
-        if (split) {    
-            const text = determineWin(results[1], dHand);
-            currText += " | " + text;
-        } 
+        const hand1 = results[0];
+        let currText;
+        let dHand = flipDealerCard();
+        if (results.length === 1 && hand1[0] === "bust") {
+            currText = "Player Bust";
+        } else {
+            dHand = runDealer();
+            currText = determineWin(hand1, dHand);
+            if (split) {
+                const hand2 = results[1];
+                const text = determineWin(hand2, dHand);
+                currText += " | " + text;
+            }
+        }
         setResultText(currText);
         setShowResults(true);
+        setGameStart(false);
     };
 
-    const runDealer = () => {
+    const flipDealerCard = () => {
         let dHand = dealerHand.map((card, index) => {
             if (index === 1) return { ...card, flipped: true };
             return card;
         });
+
+        setDealerHand(dHand);
+        return dHand;
+    }
+
+    const runDealer = () => {
+        let dHand = flipDealerCard();
 
         while (calculateValue(dHand) < 17) {
             dHand.push(makeCard(dHand.length));
@@ -143,25 +163,32 @@ export default function Game() {
     const splitSetter = (option) => {
         setSplit(option);
         setSplitOption(false);
+        setPlayable(true);
     };
 
     useEffect(() => { }, [insurance, split]);
 
     return (
         <div>
-            <button onClick={startGame}>Start Game</button>
-            <Dealer cards={dealerHand} />
-            <Player
-                gameStarted={gameStart}
-                initialHands={hands}
-                splitChoice={split}
-                onFinish={finishGame}
-            />
+            {!gameStart && <button className="play-area start-button" onClick={startGame}>Start Game</button>}
+            <div className="card-area dealer-area">
+                <Dealer cards={dealerHand} />
+            </div>
+            <div className="card-area player-area">
+                <Player
+                    gameStarted={gameStart}
+                    initialHands={hands}
+                    splitChoice={split}
+                    onFinish={finishGame}
+                    playable={playable}
+                />
+            </div>
+
             {insuranceOption && (
                 <Insurance active={insuranceOption} insuranceSet={insuranceSetter} />
             )}
-            {splitOption && <Split active={splitOption} splitSet={splitSetter} />}
-            {showResults && <h2>{resultText}</h2>}
+            <div className="play-area split-option">{splitOption && <Split active={splitOption} splitSet={splitSetter} />}</div>
+            {showResults && <h2 className="play-area result-text">{resultText}</h2>}
         </div>
     );
 }
