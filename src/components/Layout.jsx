@@ -9,7 +9,7 @@ export default function Layout(props) {
 
     const footer = (
         <footer>
-            <p>Built by <a href="https://github.com/thomasamff?tab=repositories" target="_blank"> Sam Chin</a></p>
+            <p>Built by <a href="https://github.com/schin03?tab=repositories" target="_blank"> Sam Chin</a></p>
         </footer>
     ); 
 

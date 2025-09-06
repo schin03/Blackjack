@@ -1,6 +1,6 @@
 import Hand from "./Hand.jsx";
 import React, { useState, useEffect, useRef } from "react";
-import { makeCard, calculateValue } from "../utils/Card.js";
+import { makeCard } from "../utils/Card.js";
 export default function Player({
     gameStarted,
     initialHands,
@@ -23,7 +23,6 @@ export default function Player({
                 setHands(newHands);
             } else {
                 splitResults.current.push(resultArray);
-                const newHands = [hands[0], resultArray[1]];
                 onFinish(splitResults.current);
             }
         } else {
